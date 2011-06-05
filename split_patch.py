@@ -31,7 +31,7 @@ for i in xrange(len(diff_indexes)):
     p = "".join(patch_lines[diff_indexes[i]:diff_indexes[i+1]])
   file_guess = re.split("[ /]", patch_lines[diff_indexes[i]].rstrip())[-1]
   p = header + p
-  p = re.sub("Subject: [PATCH]", "Subject: [PATCH] " + file_guess, p)
+  p = re.sub("Subject: \[PATCH\]", "Subject: [PATCH] " + file_guess, p)
   per_file_patches.append(p)
   per_file_filenames.append(file_guess)
 
