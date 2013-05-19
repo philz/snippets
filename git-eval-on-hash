@@ -1,0 +1,36 @@
+#!/bin/bash
+# Runs a command on a given hash (in a clean environment).
+#
+# Using git-filter-branch here means that git prepares
+# the tree in .git-rewrite/t, and it's a clean tree.
+# Therefore, your running command won't force you to
+# clean your entire workspace, and you can run tests,
+# without interfering with the rest of your life/workspace.
+#
+# It's unclear when the --force argument to filter-branch
+# is necessary and isn't.
+# 
+# Sample:
+#   $git-eval-on-hash HEAD^^^ 'echo; echo $GIT_COMMIT; uname -a'
+#   Rewrite d41998d46fa82aa635e5984638613ac09d084c61 (1/1)
+#   d41998d46fa82aa635e5984638613ac09d084c61
+#   Linux cairn 3.5.0-26-generic #42-Ubuntu SMP Fri Mar 8 23:18:20 UTC 2013 x86_64 x86_64 x86_64 GNU/Linux
+#   WARNING: Ref 'refs/heads/tmp_9zzlhl' is unchanged
+#   Deleted branch tmp_9zzlhl (was d41998d).
+#
+# License: Public Domain
+
+if [ $# -ne 2 ]; then
+  echo "Usage: $0 ref command"
+  exit 1
+fi
+
+REF=$1
+COMMAND=$2
+
+BRANCH_NAME=$(mktemp tmp_XXXXXX)
+git branch $BRANCH_NAME "$1"
+git filter-branch --force --tree-filter "$2" $BRANCH_NAME^..$BRANCH_NAME
+EXIT=$?
+git branch -d $BRANCH_NAME
+exit $?
