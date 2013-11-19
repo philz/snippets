@@ -15,12 +15,14 @@
 echo Marcelo is looking over your shoulder
 for file in `git diff --check --cached | grep '^[^+-]' | grep -o '^.*[0-9]\+:'` ; do
     file_name=`echo ${file} | grep -o '^[^:]\+'`
-    line_number=`echo ${file} | grep -oP '(?<=:)[0-9]+(?=:)'`
+    # grep -P is broken on OS X
+    # line_number=`echo ${file} | grep -oP '(?<=:)[0-9]+(?=:)'`
+    line_number=`echo ${file} | perl -nle'print $& if m{(?<=:)[0-9]+(?=:)}'`
     # I think the reason there are two sed commands here
     # is that 'sed -i' is different on different systems.
     # shoot me.
     (sed -i "${line_number}s/\s*$//" "${file_name}" > /dev/null 2>&1 \
-        || sed -i '' -E "${line_number}s/\s*$//" "${file_name}")
+        || sed -i '' -E "${line_number}s/[[:space:]]*$//" "${file_name}")
     git add ${file_name}
     echo "Re-wrote ${file_name} to trim whitespace."
 done
