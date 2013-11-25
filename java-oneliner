@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -x
+
+TMP=$(mktemp -d /tmp/java-one-liner.XXXXX)
+cat > $TMP/x.java <<EOF
+public class x {
+  public static void main(String[] args) throws Exception {
+$*
+  }
+}
+EOF
+cd $TMP
+javac x.java
+java x
