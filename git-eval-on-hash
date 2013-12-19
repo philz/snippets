@@ -30,6 +30,7 @@ COMMAND=$2
 
 BRANCH_NAME=$(mktemp tmp_XXXXXX)
 git branch $BRANCH_NAME "$1"
+git log --oneline -n 1 "$1"
 git filter-branch --force --tree-filter "$2" $BRANCH_NAME^..$BRANCH_NAME
 EXIT=$?
 git branch -d $BRANCH_NAME
